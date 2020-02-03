@@ -1,0 +1,25 @@
+{
+  "name": "express-paths-as-routes",
+  "version": "1.0.0",
+  "description": "Express Middleware that mounts file paths as http routes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foysavas/express-paths-as-routes.git"
+  },
+  "author": "Foy Savas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/foysavas/express-paths-as-routes/issues"
+  },
+  "homepage": "https://github.com/foysavas/express-paths-as-routes#readme",
+  "devDependencies": {
+  },
+  "dependencies": {
+    "recursive-readdir-sync": "^1.0.6",
+    "express": ">= 2.0.0"
+  }
+}
