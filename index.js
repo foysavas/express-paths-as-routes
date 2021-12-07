@@ -6,7 +6,7 @@ function parseRoutes(api_dir, opts = {}) {
   const routes = {};
   api_dir = path.resolve(api_dir);
   const files = recursiveReadSync(api_dir)
-    .map(fp => {
+    .map((fp) => {
       return fp.substr(api_dir.length);
     })
     .sort((a, b) => {
@@ -42,7 +42,7 @@ function parseRoutes(api_dir, opts = {}) {
     if (!routes[filepath]) {
       routes[filepath] = {
         files: [],
-        methods: []
+        methods: [],
       };
     }
     const route = routes[filepath];
@@ -56,22 +56,32 @@ function parseRoutes(api_dir, opts = {}) {
   return routes;
 }
 
-module.exports = function(api_dir, opts = {}) {
+module.exports = function (api_dir, opts = {}) {
   const router = express.Router();
   const routes = parseRoutes(api_dir, opts);
   for (const route_path of Object.keys(routes)) {
     const route_info = routes[route_path];
     for (const route_meth of route_info.methods) {
-      router[route_meth](route_path, function(req, res, next) {
+      router[route_meth](route_path, function (req, res, next) {
         const meth = req.method.toLowerCase();
         if (route_info.methods.indexOf(meth) === -1) {
           next();
         }
         const default_re = new RegExp("^" + meth + "\\.");
-        const tmpl_name = route_info.files.filter(tn => tn.match(default_re))[0];
+        const tmpl_name = route_info.files.filter((tn) =>
+          tn.match(default_re)
+        )[0];
         const tmpl = `${api_dir}${req.route.path}/${tmpl_name}`;
         delete require.cache[require.resolve(tmpl)];
-        return require(tmpl)(req, res);
+        const tmplFunc = require(tmpl);
+        if (typeof tmplFunc === "function") {
+          return tmplFunc(req, res);
+        } else if (
+          typeof tmplFunc === "object" &&
+          typeof tmplFunc.default === "function"
+        ) {
+          return tmplFunc.default(req, res);
+        }
       });
     }
   }
