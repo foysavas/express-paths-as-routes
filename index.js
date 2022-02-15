@@ -72,7 +72,9 @@ module.exports = function (api_dir, opts = {}) {
           tn.match(default_re)
         )[0];
         const tmpl = `${api_dir}${req.route.path}/${tmpl_name}`;
-        delete require.cache[require.resolve(tmpl)];
+        if (process.env.NODE_ENV !== 'production') {
+          delete require.cache[require.resolve(tmpl)];
+        }
         const tmplFunc = require(tmpl);
         if (typeof tmplFunc === "function") {
           return tmplFunc(req, res);
